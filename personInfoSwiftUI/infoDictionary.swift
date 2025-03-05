@@ -18,7 +18,7 @@ class infoDictionary: ObservableObject
     func add(_ author:String, _ title:String, _ genre:String, _ price:String)
     {
         // send to viewModel to create a personRecord object and then saved into the dict
-        let pRecord =  personRecord(n: author, s:title, a: genre, p: price, id: UUID())
+        let pRecord =  personRecord(n: author, s:title, a: genre, p: price)
         infoRepository[index] = pRecord // add into dict
         index += 1
         for (_, value) in infoRepository {

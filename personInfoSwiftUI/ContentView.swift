@@ -74,7 +74,7 @@ struct ContentView: View {
 
 
 struct NaviView: View
-    {
+{
     @Binding var authorN:String
     @Binding var titleN:String
     @Binding var genreN:String
@@ -160,15 +160,21 @@ struct NaviView: View
                     }
                     
                     Section(header: Text("Search result")) {
-                        Text(searchtitle)
+                        TextField("Title", text: $searchtitle)
+                        TextField("Author", text: $sauthor)
+                        TextField("Genre", text: $sgenre)
+                        TextField("Price", text: $sprice)
                         
-                        Text(sauthor)
-                        
-                        Text(sgenre)
-                        
-                        Text(sprice)
+                        Button("Update") {
+                            if let p = pModel.search(s: searchtitle) {
+                                p.author = sauthor
+                                p.genre = sgenre
+                                p.price = sprice
+                            }
+                        }
                         
                     }
+                    
                 }
             }
     }
@@ -187,43 +193,43 @@ struct ToolView: View
     @Binding var sgenre:String
     @ObservedObject  var pModel : infoDictionary
     
-   // @State  var showingNoRecordsFoundDialog = false
-        
+    // @State  var showingNoRecordsFoundDialog = false
+    
     var body: some View {
         NavigationView {
             VStack {
                 Text("")
                 
                 // Toolbar
-                .toolbar {
-                    ToolbarItemGroup(placement: .bottomBar) {
-                        Spacer()
-                        Button("Next") {
-                            // Implement navigation action
+                    .toolbar {
+                        ToolbarItemGroup(placement: .bottomBar) {
+                            Spacer()
+                            Button("Next") {
+                                // Implement navigation action
+                            }
+                            Spacer()
+                            Button("Prev") {
+                                // Implement navigation action
+                            }
+                            Spacer()
                         }
-                        Spacer()
-                        Button("Prev") {
-                            // Implement navigation action
+                        
+                        ToolbarItem(placement: .bottomBar) {
+                            Button(action:
+                                    {
+                                print(pModel.getCount())
+                                showAddBook = true
+                                // pModel.add(authorN, String(titleN), String(genreN), String(priceN))
+                            },
+                                   label: {
+                                Image(systemName: "plus.app")
+                            })
                         }
-                        Spacer()
                     }
-                    
-                    ToolbarItem(placement: .bottomBar) {
-                        Button(action:
-                                {
-                            print(pModel.getCount())
-                            showAddBook = true
-                            // pModel.add(authorN, String(titleN), String(genreN), String(priceN))
-                        },
-                               label: {
-                            Image(systemName: "plus.app")
-                        })
-                    }
-                }
-                .sheet(isPresented: $showAddBook, content: {
-                    dataEnterView(authorD: $authorN, titleD: $titleN, genreD: $genreN, priceD: $priceN, showAddBook: $showAddBook, pModel: self.pModel)
-                    
-                })
+                    .sheet(isPresented: $showAddBook, content: {
+                        dataEnterView(authorD: $authorN, titleD: $titleN, genreD: $genreN, priceD: $priceN, showAddBook: $showAddBook, pModel: self.pModel)
+                        
+                    })
             }
         }
     }
@@ -250,43 +256,43 @@ struct dataEnterView: View
             })
         }
         HStack{
-           
+            
             Text("title:")
                 .foregroundColor(.blue)
             Spacer()
             TextField("Enter title", text: $titleD)
                 .textFieldStyle(.roundedBorder)
-                
+            
         }
         
         HStack{
-           
+            
             Text("author:")
                 .foregroundColor(.blue)
             Spacer()
             TextField("Enter author", text: $authorD)
                 .textFieldStyle(.roundedBorder)
-                
+            
         }
         
         HStack{
-           
+            
             Text("genre:")
                 .foregroundColor(.blue)
             Spacer()
             TextField("Enter genre", text: $genreD)
                 .textFieldStyle(.roundedBorder)
-                
+            
         }
         
         HStack{
-           
+            
             Text("price:")
                 .foregroundColor(.blue)
             Spacer()
             TextField("Enter price", text: $priceD)
                 .textFieldStyle(.roundedBorder)
-                
+            
         }
     }
     
@@ -307,7 +313,7 @@ struct SearchView: View
             Spacer()
             TextField("", text: $authorS)
                 .textFieldStyle(.roundedBorder)
-                
+            
         }
         
         
@@ -317,7 +323,7 @@ struct SearchView: View
             Spacer()
             TextField("", text: $genreS)
                 .textFieldStyle(.roundedBorder)
-                
+            
         }
     }
     

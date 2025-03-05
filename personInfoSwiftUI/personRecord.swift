@@ -13,14 +13,12 @@ class personRecord
     var title:String? = nil
     var genre:String? = nil
     var price:String? = nil
-    var id: UUID
     
-    init(n:String, s:String, a:String, p:String, id:UUID) {
+    init(n:String, s:String, a:String, p:String) {
         self.author = n
         self.title = s
         self.genre = a
         self.price = p
-        self.id = UUID()
     }
     
     func change_genre(newgenre:String)
