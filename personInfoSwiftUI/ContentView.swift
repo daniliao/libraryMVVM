@@ -27,6 +27,7 @@ struct ContentView: View {
     @State var deleteS:String
     
     
+    
     var body: some View {
         NavigationView{
             VStack {
@@ -42,24 +43,21 @@ struct ContentView: View {
                                 gradient: Gradient(colors: [Color .blue]), startPoint: .leading, endPoint: .trailing
                             )
                         )
-                    if let title = personInfoDictionary.getFirstAvailableBook() {
-                        Text("Title: \(title)")
-                    } else {
-                        VStack{
-                            Text("Preview Unavailable")
-                            Text("Please add your first book")
+                    if let book = personInfoDictionary.getBook(index: personInfoDictionary.navIndex) {
+                        VStack {
+                            Text("Title: \(book.title ?? "Unknown")")
+                            Text("Author: \(book.author ?? "Unknown")")
+                            Text("Genre: \(book.genre ?? "Unknown")")
+                            Text("Price: \(book.price ?? "Unknown")")
                         }
+                    } else {
+                        Text("Preview Unavailable, Please add your first book")
+                        
                     }
                 }
                 .padding(20)
-                .frame(width: 337.5, height: 212.5)
-                
-                
-                
-                //Spacer()
-                //Text("Search Results")
-                //Spacer()
-                //SearchView(authorS: $searchauthor, genreS: $searchgenre)
+                .frame(width: 337.5, height: 600)
+
                 Spacer()
                 ToolView(searchtitle: "1", authorN: $author,titleN:$title, genreN:$genre, priceN: $price, sauthor: $searchauthor , sgenre: $searchgenre, pModel: personInfoDictionary)
             }
@@ -89,6 +87,7 @@ struct NaviView: View
     @State  var showingSearchAlert = false
     @State  var showingSearchForm = false
     @State var showAddBook: Bool
+    @State var showFoundAlert: Bool = false
     
     @State  var showingDeleteAlert = false
     @Binding  var deletetitle: String
@@ -144,14 +143,19 @@ struct NaviView: View
                                 sauthor = p.author ?? "Unknown"
                                 sgenre = p.genre ?? "Unknown"
                                 sprice = p.price ?? "Unknown"
+                                showFoundAlert = true
                                 print("In search")
                             } else {
                                 sauthor = "No Record"
                                 sgenre = "No Record"
                                 sprice = "No Record"
+                                showFoundAlert = false
                                 print("No Record")
+                                
                             }
                         }
+                        
+                        Text("You need to search book first!")
                         
                         Button("Cancel") {
                             showingSearchForm = false
@@ -170,12 +174,17 @@ struct NaviView: View
                                 p.author = sauthor
                                 p.genre = sgenre
                                 p.price = sprice
+                                p.title = searchtitle
+                                pModel.navIndex += 0
                             }
                         }
                         
                     }
                     
                 }
+                .alert(isPresented: $showFoundAlert) {
+                                Alert(title: Text("Message"), message: Text("We found the book! You may edit the book now!"), dismissButton: .default(Text("OK")))
+                            }
             }
     }
 }
@@ -193,6 +202,9 @@ struct ToolView: View
     @Binding var sgenre:String
     @ObservedObject  var pModel : infoDictionary
     
+    @State private var showEndAlert: Bool = false
+    @State private var endAlertMessage: String = ""
+    
     // @State  var showingNoRecordsFoundDialog = false
     
     var body: some View {
@@ -205,12 +217,24 @@ struct ToolView: View
                         ToolbarItemGroup(placement: .bottomBar) {
                             Spacer()
                             Button("Next") {
-                                // Implement navigation action
+                                if pModel.navIndex < pModel.getCount() - 1 {
+                                    pModel.navIndex += 1
+                                } else {
+                                    endAlertMessage = "No next book available"
+                                    showEndAlert = true
+                                }
                             }
+                            
                             Spacer()
                             Button("Prev") {
-                                // Implement navigation action
+                                if pModel.navIndex > 0 {
+                                    pModel.navIndex -= 1
+                                } else {
+                                    endAlertMessage = "No previous book available"
+                                    showEndAlert = true
+                                }
                             }
+                            
                             Spacer()
                         }
                         
@@ -219,7 +243,6 @@ struct ToolView: View
                                     {
                                 print(pModel.getCount())
                                 showAddBook = true
-                                // pModel.add(authorN, String(titleN), String(genreN), String(priceN))
                             },
                                    label: {
                                 Image(systemName: "plus.app")
@@ -230,7 +253,11 @@ struct ToolView: View
                         dataEnterView(authorD: $authorN, titleD: $titleN, genreD: $genreN, priceD: $priceN, showAddBook: $showAddBook, pModel: self.pModel)
                         
                     })
+                
             }
+            .alert(isPresented: $showEndAlert) {
+                            Alert(title: Text("Opps"), message: Text(endAlertMessage), dismissButton: .default(Text("OK")))
+                        }
         }
     }
 }
@@ -291,37 +318,6 @@ struct dataEnterView: View
                 .foregroundColor(.blue)
             Spacer()
             TextField("Enter price", text: $priceD)
-                .textFieldStyle(.roundedBorder)
-            
-        }
-    }
-    
-}
-
-struct SearchView: View
-{
-    
-    @Binding var authorS:String
-    @Binding var genreS:String
-    @ObservedObject  var pModel : infoDictionary
-    
-    var body: some View
-    {
-        HStack{
-            Text("author:")
-                .foregroundColor(.blue)
-            Spacer()
-            TextField("", text: $authorS)
-                .textFieldStyle(.roundedBorder)
-            
-        }
-        
-        
-        HStack{
-            Text("genre:")
-                .foregroundColor(.blue)
-            Spacer()
-            TextField("", text: $genreS)
                 .textFieldStyle(.roundedBorder)
             
         }

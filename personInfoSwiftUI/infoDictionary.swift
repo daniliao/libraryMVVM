@@ -12,9 +12,10 @@ class infoDictionary: ObservableObject
     // dictionary that stores books
     @Published var infoRepository : [Int:personRecord] = [Int:personRecord] ()
     @Published var index: Int = 0
+    @Published var navIndex: Int = 0
     
     init() { }
-  
+    
     func add(_ author:String, _ title:String, _ genre:String, _ price:String)
     {
         // send to viewModel to create a personRecord object and then saved into the dict
@@ -67,7 +68,11 @@ class infoDictionary: ObservableObject
     func deleteRec(s: String) {
         if let key = infoRepository.first(where: { $0.value.title == s })?.key {
             infoRepository.removeValue(forKey: key)
+            print("Book \(s) was deleted.")
+        } else {
+            print("No book found: \(s)")
         }
     }
-
+    
+    
 }
